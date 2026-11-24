@@ -1,0 +1,63 @@
+# Ambiente local. Credenciais sintéticas, portas só em 127.0.0.1.
+name: medsales
+
+x-env: &env
+  APP_NAME: MedSales
+  APP_ENV: local
+  APP_DEBUG: "true"
+  APP_URL: http://localhost:8090
+  APP_LOCALE: pt_BR
+  TENANCY_BASE_DOMAIN: localhost
+  PLATFORM_HOST: admin.localhost
+  LOG_CHANNEL: stderr
+  DB_CONNECTION: mysql
+  DB_HOST: mysql
+  DB_PORT: 3306
+  DB_DATABASE: medsales
+  DB_USERNAME: medsales
+  DB_PASSWORD: local
+  SESSION_DRIVER: database
+  SESSION_LIFETIME: 30
+  SESSION_ENCRYPT: "true"
+  SESSION_COOKIE: medsales_session
+  QUEUE_CONNECTION: database
+  CACHE_STORE: database
+  MAIL_MAILER: log
+  DEMO_SEED: "true"
+
+services:
+  app:
+    build: .
+    image: medsales-app:local
+    environment: *env
+    ports:
+      - "127.0.0.1:8090:80"
+    volumes:
+      - storage:/var/www/html/storage
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  mysql:
+    image: mysql:8.0
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-time-zone=+00:00
+    environment:
+      MYSQL_DATABASE: medsales
+      MYSQL_USER: medsales
+      MYSQL_PASSWORD: local
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+    ports:
+      - "127.0.0.1:3390:3306"
+    volumes:
+      - mysql:/var/lib/mysql
+      - ./docker/mysql-init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysql -umedsales -plocal -e 'select 1' medsales_test"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+
+volumes:
+  mysql:
+  storage:

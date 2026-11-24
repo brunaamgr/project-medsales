@@ -1,0 +1,22 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../views';
+@source '../../app/Modules';
+
+@theme {
+    --color-brand-50: #eef7f6;
+    --color-brand-100: #d5ebe8;
+    --color-brand-600: #17766d;
+    --color-brand-700: #125e57;
+    --color-brand-900: #0c3b37;
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
+:focus-visible {
+    outline: 2px solid var(--color-brand-600);
+    outline-offset: 2px;
+}

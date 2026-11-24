@@ -1,0 +1,20 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 6
+    paths:
+        - app
+        - config
+        - database
+        - routes
+    ignoreErrors:
+        # Únicas exceções à regra de tenant, revisadas caso a caso.
+        -
+            identifier: medsales.tenantBypass
+            paths:
+                - app/Core/Auth/SessionRevoker.php
+                - app/Core/Tenancy/TenantBuilder.php
+
+rules:
+    - MedSales\PHPStan\Rules\ForbidTenantBypassRule
